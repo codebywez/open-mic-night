@@ -47,7 +47,7 @@ export const createEventSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "Event name is required")
+    .min(3, "Event name must be at least 3 characters")
     .max(EVENT_NAME_MAX, `Keep it under ${EVENT_NAME_MAX} characters`),
   slug: optionalString,
   date: dateString,
