@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SITE_URL } from "@/lib/config";
 import { type CreateEventInput, type CreateEventValues, createEventSchema } from "@/lib/schemas";
+import { slugify } from "@/lib/slug";
 import { cn } from "@/lib/utils";
 import { createEvent } from "@/server/actions/events";
 import { EventCreated } from "./event-created";
@@ -51,8 +52,20 @@ export function CreateEventForm() {
     handleSubmit,
     setValue,
     setError,
+    getValues,
     formState: { errors, isSubmitting },
   } = form;
+
+  function handleUseName() {
+    const slug = slugify(getValues("name") ?? "");
+    if (!slug) {
+      setError("name", { message: "Enter an event name first" });
+      return;
+    }
+    setValue("slug", slug, { shouldValidate: false });
+    setError("slug", { message: "" });
+    setSuggestions([]);
+  }
 
   async function onSubmit(values: CreateEventValues) {
     setSuggestions([]);
@@ -110,6 +123,13 @@ export function CreateEventForm() {
             aria-invalid={!!errors.slug}
             {...register("slug")}
           />
+          <button
+            type="button"
+            onClick={handleUseName}
+            className="mr-1 shrink-0 whitespace-nowrap rounded px-2 py-1 text-xs font-medium text-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            Use name
+          </button>
         </div>
         <p className="text-xs text-muted-foreground">
           Leave blank to generate an automatic short code.

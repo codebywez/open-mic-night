@@ -3,6 +3,7 @@ import "server-only";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { customAlphabet } from "nanoid";
 import { RESERVED_SLUGS } from "./config";
+import { slugify } from "./slug";
 
 // Unambiguous lowercase alphabet (no 0/o/1/l/i) for human-friendly slugs.
 const slugAlphabet = "abcdefghjkmnpqrstuvwxyz23456789";
@@ -38,13 +39,7 @@ export type SlugValidation = { ok: true; slug: string } | { ok: false; reason: s
 
 /** Normalises and validates a user-supplied custom slug (format only, not availability). */
 export function normalizeSlug(input: string): SlugValidation {
-  const slug = input
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+  const slug = slugify(input);
 
   if (slug.length < 3) return { ok: false, reason: "Web address must be at least 3 characters." };
   if (slug.length > 32) return { ok: false, reason: "Web address must be 32 characters or fewer." };
