@@ -43,6 +43,7 @@ import {
   reorderPerformers,
   setEventStatus,
   setPerformerStatus,
+  setSignupsClosed,
   updatePerformer,
 } from "@/server/actions/host";
 import type { EventRow, PerformerRow } from "@/types/database";
@@ -180,6 +181,7 @@ export function HostControl({
   }
 
   const isFinished = event.status === "finished" || event.status === "expired";
+  const signupsClosed = Boolean(event.settings.signupsClosed);
 
   return (
     <div className="mx-auto flex min-h-full w-full max-w-2xl flex-col">
@@ -216,7 +218,27 @@ export function HostControl({
             <h1 className="text-xl font-bold tracking-tight">{event.name}</h1>
             <p className="text-sm text-muted-foreground">Host control</p>
           </div>
-          <StatusBadge status={event.status} />
+          <button
+            type="button"
+            disabled={pending || isFinished}
+            aria-label={signupsClosed ? "Open sign-ups" : "Close sign-ups"}
+            title={
+              isFinished
+                ? undefined
+                : signupsClosed
+                  ? "Tap to open sign-ups"
+                  : "Tap to close sign-ups"
+            }
+            onClick={() =>
+              run(
+                setSignupsClosed(event.slug, token, !signupsClosed),
+                signupsClosed ? "Sign-ups opened" : "Sign-ups closed",
+              )
+            }
+            className="rounded-full transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-default disabled:opacity-100"
+          >
+            <StatusBadge status={event.status} signupsClosed={signupsClosed} pulse={!isFinished} />
+          </button>
         </section>
 
         {/* Timing summary */}

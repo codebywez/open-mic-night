@@ -31,7 +31,7 @@ export function PublicEvent({
     return { schedule: s, groups: deriveQueueGroups(s) };
   }, [event, performers, now]);
 
-  const open = signupsOpen(event.status);
+  const open = signupsOpen(event.status, event.settings.signupsClosed);
   const dateLabel = formatEventDate(event.event_date);
   const startLabel = formatTimeString(event.start_time);
   const finishLabel = formatTimeString(event.end_time);
@@ -45,7 +45,7 @@ export function PublicEvent({
           <section className="flex flex-col gap-3">
             <div className="flex items-start justify-between gap-3">
               <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{event.name}</h1>
-              <StatusBadge status={event.status} />
+              <StatusBadge status={event.status} signupsClosed={event.settings.signupsClosed} />
             </div>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
               {dateLabel && (

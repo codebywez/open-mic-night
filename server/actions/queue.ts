@@ -20,12 +20,14 @@ export async function joinQueue(slug: string, input: JoinQueueValues): Promise<J
   const supabase = getSupabaseAdminClient();
   const { data: event } = await supabase
     .from("events")
-    .select("id, status")
+    .select("id, status, settings")
     .eq("slug", slug)
     .maybeSingle();
 
   if (!event) return { ok: false, error: "Event not found." };
-  if (!signupsOpen(event.status)) return { ok: false, error: "Sign-ups are closed." };
+  if (!signupsOpen(event.status, event.settings.signupsClosed)) {
+    return { ok: false, error: "Sign-ups are closed." };
+  }
 
   const { data: last } = await supabase
     .from("performers")

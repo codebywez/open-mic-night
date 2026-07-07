@@ -47,7 +47,11 @@ export function DisplayScreen({
       <header className="mb-6 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold tracking-tight lg:text-4xl">{event.name}</h1>
-          <StatusBadge status={event.status} className="text-sm" />
+          <StatusBadge
+            status={event.status}
+            signupsClosed={event.settings.signupsClosed}
+            className="text-sm"
+          />
         </div>
         <div className="flex items-center gap-3">
           <span className="hidden text-lg text-muted-foreground sm:inline">{APP_NAME}</span>

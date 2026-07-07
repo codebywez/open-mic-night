@@ -27,22 +27,7 @@ export function performanceTypeLabel(type: PerformanceType): string {
   return PERFORMANCE_TYPES[type].label;
 }
 
-const STATUS_META: Record<
-  EventStatus,
-  { label: string; tone: "open" | "live" | "closed" | "muted" }
-> = {
-  draft: { label: "Draft", tone: "muted" },
-  open: { label: "Sign-ups Open", tone: "open" },
-  live: { label: "Live", tone: "live" },
-  finished: { label: "Finished", tone: "closed" },
-  expired: { label: "Expired", tone: "muted" },
-};
-
-export function eventStatusMeta(status: EventStatus) {
-  return STATUS_META[status];
-}
-
 /** Whether performers may still join the queue. */
-export function signupsOpen(status: EventStatus): boolean {
-  return status === "open" || status === "live";
+export function signupsOpen(status: EventStatus, signupsClosed?: boolean): boolean {
+  return (status === "open" || status === "live") && !signupsClosed;
 }

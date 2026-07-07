@@ -12,6 +12,8 @@ export type EventSettings = {
   songDurationMinutes: number;
   songChangeMinutes: number;
   setupMinutes: Record<PerformanceType, number>;
+  /** When true, performers can no longer join even if the event is open/live. */
+  signupsClosed?: boolean;
 };
 
 export type EventRow = {

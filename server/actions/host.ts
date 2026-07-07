@@ -199,6 +199,23 @@ export async function reorderPerformers(
   return { ok: true };
 }
 
+export async function setSignupsClosed(
+  slug: string,
+  token: string,
+  closed: boolean,
+): Promise<ActionResult> {
+  const auth = await verifyHostToken(slug, token);
+  if (!auth.ok) return { ok: false, error: auth.error };
+  const supabase = getSupabaseAdminClient();
+  const { error } = await supabase
+    .from("events")
+    .update({ settings: { ...auth.event.settings, signupsClosed: closed } })
+    .eq("id", auth.eventId);
+  if (error) return { ok: false, error: "Could not update sign-ups." };
+  revalidateHost(slug, token);
+  return { ok: true };
+}
+
 export async function setEventStatus(
   slug: string,
   token: string,
