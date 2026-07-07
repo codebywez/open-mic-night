@@ -71,10 +71,10 @@ export function QueueSpotlight({
         </motion.div>
       </div>
 
-      {/* On Deck */}
+      {/* Up Next */}
       {onDeck && (
         <div>
-          <SectionLabel big={big}>On Deck</SectionLabel>
+          <SectionLabel big={big}>Up Next</SectionLabel>
           <motion.div
             layout
             className={cn(
@@ -99,10 +99,10 @@ export function QueueSpotlight({
         </div>
       )}
 
-      {/* Coming Up */}
+      {/* Still to Come */}
       {comingUp.length > 0 && (
         <div>
-          <SectionLabel big={big}>Coming Up</SectionLabel>
+          <SectionLabel big={big}>Still to Come</SectionLabel>
           <ul className="flex flex-col gap-2">
             <AnimatePresence initial={false}>
               {comingUp.map((item, index) => (

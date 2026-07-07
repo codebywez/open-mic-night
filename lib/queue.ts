@@ -10,7 +10,7 @@ export interface QueueGroups {
   activeCount: number;
 }
 
-/** Splits an ordered schedule into Now Playing / On Deck / Coming Up. */
+/** Splits an ordered schedule into Now Playing / Up Next / Still to Come. */
 export function deriveQueueGroups(schedule: Schedule): QueueGroups {
   const active = schedule.items.filter((i) => i.performer.status !== "completed");
   const performing = active.find((i) => i.performer.status === "performing");

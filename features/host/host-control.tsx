@@ -41,7 +41,6 @@ import {
   addPerformer,
   removePerformer,
   reorderPerformers,
-  setEventStatus,
   setPerformerStatus,
   setSignupsClosed,
   updatePerformer,
@@ -81,7 +80,6 @@ export function HostControl({
   const [addOpen, setAddOpen] = useState(false);
   const [editing, setEditing] = useState<PerformerRow | null>(null);
   const [removeTarget, setRemoveTarget] = useState<PerformerRow | null>(null);
-  const [endOpen, setEndOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -184,7 +182,7 @@ export function HostControl({
   const signupsClosed = Boolean(event.settings.signupsClosed);
 
   return (
-    <div className="mx-auto flex min-h-full w-full max-w-2xl flex-col">
+    <div className="mx-auto flex min-h-full w-full max-w-2xl flex-col lg:max-w-4xl">
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur-md">
         <div className="flex h-14 items-center justify-between gap-2 px-4">
@@ -330,29 +328,6 @@ export function HostControl({
             </ul>
           </section>
         )}
-
-        {/* Event lifecycle */}
-        <section className="mt-2">
-          {isFinished ? (
-            <Button
-              variant="outline"
-              className="w-full"
-              disabled={pending}
-              onClick={() => run(setEventStatus(event.slug, token, "open"), "Event reopened")}
-            >
-              Reopen event
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              className="w-full text-destructive hover:text-destructive"
-              disabled={pending}
-              onClick={() => setEndOpen(true)}
-            >
-              End event
-            </Button>
-          )}
-        </section>
       </main>
 
       {/* Dialogs & sheets */}
@@ -414,29 +389,6 @@ export function HostControl({
               className="bg-destructive text-white hover:bg-destructive/90"
             >
               Remove
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog open={endOpen} onOpenChange={setEndOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>End this event?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Sign-ups will close and the event will be marked as finished. You can reopen it
-              afterwards if needed.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                setEndOpen(false);
-                run(setEventStatus(event.slug, token, "finished"), "Event ended");
-              }}
-            >
-              End event
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

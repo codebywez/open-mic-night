@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2, RotateCcw, Square, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -30,7 +30,7 @@ import { Label } from "@/components/ui/label";
 import { buildEventUrl } from "@/lib/config";
 import { type CreateEventInput, type CreateEventValues, createEventSchema } from "@/lib/schemas";
 import { updateEventSettings } from "@/server/actions/events";
-import { deleteEvent } from "@/server/actions/host";
+import { deleteEvent, setEventStatus } from "@/server/actions/host";
 import type { EventRow } from "@/types/database";
 
 export function SettingsDialog({
@@ -88,6 +88,19 @@ export function SettingsDialog({
       setDeleting(false);
     }
   }
+
+  async function handleSetStatus(status: "finished" | "open", message: string) {
+    const result = await setEventStatus(event.slug, token, status);
+    if (result.ok) {
+      toast.success(message);
+      onOpenChange(false);
+      router.refresh();
+    } else {
+      toast.error(result.error);
+    }
+  }
+
+  const isFinished = event.status === "finished" || event.status === "expired";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -194,12 +207,47 @@ export function SettingsDialog({
           </Button>
         </form>
 
-        <div className="mt-2 border-t border-border pt-4">
+        <div className="mt-2 flex flex-col gap-2 border-t border-border pt-4 sm:flex-row">
+          {isFinished ? (
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => handleSetStatus("open", "Event reopened")}
+            >
+              <RotateCcw className="size-4" aria-hidden />
+              Reopen event
+            </Button>
+          ) : (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" className="flex-1">
+                  <Square className="size-4" aria-hidden />
+                  End event
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>End this event?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Sign-ups will close and the event will be marked as finished. You can reopen it
+                    afterwards if needed.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => handleSetStatus("finished", "Event ended")}>
+                    End event
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full text-destructive hover:text-destructive"
+                className="flex-1 text-destructive hover:text-destructive"
                 disabled={deleting}
               >
                 <Trash2 className="size-4" aria-hidden />
