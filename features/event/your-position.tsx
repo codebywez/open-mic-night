@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { formatClockTime, formatRelativeTo } from "@/lib/format";
-import { deriveQueueGroups, performanceTypeLabel } from "@/lib/queue";
+import { deriveQueueGroups } from "@/lib/queue";
 import { isMuted, playChime, setMuted, vibrate } from "@/lib/sound";
 import { buildSchedule } from "@/lib/timing";
 import { cn } from "@/lib/utils";
@@ -109,11 +109,6 @@ export function YourPosition({
   const position = schedule.items
     .filter((i) => i.performer.status !== "completed")
     .findIndex((i) => i.performer.id === performerId);
-  const meta = me
-    ? `${performanceTypeLabel(me.performer.performance_type)} · ${me.performer.songs} ${
-        me.performer.songs === 1 ? "song" : "songs"
-      }`
-    : "";
 
   return (
     <Panel tone={stage === "up" ? "up" : stage === "next" ? "next" : "default"}>
@@ -122,7 +117,6 @@ export function YourPosition({
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             {me?.performer.display_name}
           </p>
-          <p className="text-sm text-muted-foreground">{meta}</p>
         </div>
         <Button
           variant="ghost"
