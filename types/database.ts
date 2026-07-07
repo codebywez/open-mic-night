@@ -3,15 +3,18 @@ import type { PerformanceType } from "@/lib/config";
 export type EventStatus = "draft" | "open" | "live" | "finished" | "expired";
 export type PerformerStatus = "queued" | "performing" | "completed";
 
-/** Shape of the `events.settings` JSON column. */
-export interface EventSettings {
+/**
+ * Shape of the `events.settings` JSON column. Declared as a `type` (not an
+ * interface) so it satisfies Supabase's `Record<string, unknown>` constraint.
+ */
+export type EventSettings = {
   songs: number;
   songDurationMinutes: number;
   songChangeMinutes: number;
   setupMinutes: Record<PerformanceType, number>;
-}
+};
 
-export interface EventRow {
+export type EventRow = {
   id: string;
   name: string;
   slug: string;
@@ -22,9 +25,9 @@ export interface EventRow {
   settings: EventSettings;
   created_at: string;
   expires_at: string;
-}
+};
 
-export interface PerformerRow {
+export type PerformerRow = {
   id: string;
   event_id: string;
   display_name: string;
@@ -34,19 +37,19 @@ export interface PerformerRow {
   queue_position: number;
   setup_override: number | null;
   created_at: string;
-}
+};
 
-export interface EventSecretRow {
+export type EventSecretRow = {
   event_id: string;
   token_hash: string;
-}
+};
 
 /**
  * Minimal generated-style Database type consumed by the typed Supabase client.
  * Kept hand-written so the project type-checks without a live project; run
  * `supabase gen types typescript` to regenerate if the schema changes.
  */
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       events: {
@@ -64,8 +67,13 @@ export interface Database {
       };
       performers: {
         Row: PerformerRow;
-        Insert: Omit<PerformerRow, "id" | "created_at"> &
-          Partial<Pick<PerformerRow, "id" | "created_at">>;
+        Insert: Omit<
+          PerformerRow,
+          "id" | "created_at" | "status" | "queue_position" | "setup_override"
+        > &
+          Partial<
+            Pick<PerformerRow, "id" | "created_at" | "status" | "queue_position" | "setup_override">
+          >;
         Update: Partial<PerformerRow>;
         Relationships: [];
       };
@@ -80,4 +88,4 @@ export interface Database {
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
-}
+};
