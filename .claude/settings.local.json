@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(git --version)",
+      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --app --no-src-dir --no-eslint --import-alias \"@/*\" --use-npm --disable-git --yes)",
+      "Bash(npm install *)",
+      "Bash(git init *)",
+      "Bash(npx biome *)",
+      "Bash(git config *)",
+      "Bash(npx --yes shadcn@latest init -b neutral -d --yes)",
+      "Bash(npx --yes shadcn@latest init --help)",
+      "Bash(npx --yes shadcn@latest init -b radix -t next --force --yes)",
+      "Bash(npx --yes shadcn@latest init -b radix -t next -p base-nova --force --yes --silent)",
+      "Bash(echo \"EXIT $?\")"
+    ]
+  }
+}
