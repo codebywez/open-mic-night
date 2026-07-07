@@ -50,6 +50,7 @@ export function CreateEventForm() {
     handleSubmit,
     setValue,
     setError,
+    clearErrors,
     getValues,
     watch,
     formState: { errors, isSubmitting },
@@ -60,11 +61,11 @@ export function CreateEventForm() {
   function handleUseName() {
     const slug = slugify(getValues("name") ?? "");
     if (!slug) {
-      setError("name", { message: "Enter an event name first" });
+      setError("slug", { message: "That name has no letters or numbers to use." });
       return;
     }
     setValue("slug", slug, { shouldValidate: false });
-    setError("slug", { message: "" });
+    clearErrors("slug");
     setSuggestions([]);
   }
 
@@ -147,7 +148,7 @@ export function CreateEventForm() {
                 type="button"
                 onClick={() => {
                   setValue("slug", s, { shouldValidate: false });
-                  setError("slug", { message: "" });
+                  clearErrors("slug");
                   setSuggestions([]);
                 }}
                 className="rounded-full border border-border px-2.5 py-1 text-xs hover:bg-accent"
