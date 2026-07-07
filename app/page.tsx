@@ -61,8 +61,11 @@ export default function HomePage() {
       </main>
 
       <footer className="border-t border-border/60 py-6">
-        <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-1 px-4 text-center text-xs text-muted-foreground">
+        <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-2 px-4 text-center text-xs text-muted-foreground">
           <p>All event data is automatically deleted after the event. No tracking, no accounts.</p>
+          <Link href="/privacy" className="underline underline-offset-4 hover:text-foreground">
+            Privacy
+          </Link>
         </div>
       </footer>
     </>

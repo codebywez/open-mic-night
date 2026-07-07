@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Open Mic Night
 
-## Getting Started
+The simplest way to run an open mic queue. Create an event in under 30 seconds,
+share a QR code, and let performers sign themselves up while estimated set times
+update live. Free to host, no accounts, and every event auto-deletes when it's over.
 
-First, run the development server:
+- **Mobile-first & installable** — a PWA you can add to your home screen.
+- **Realtime** — the queue updates instantly across performers, the host, and the TV display.
+- **Privacy by design** — only a display name is collected; all data is deleted a few hours after the event.
+
+Built with Next.js (App Router) + React, TypeScript (strict), Tailwind CSS v4,
+shadcn/ui, Supabase (Postgres + Realtime), and Framer Motion.
+
+## Routes
+
+| Route | Purpose |
+| --- | --- |
+| `/` | Landing page |
+| `/create` | Create an event |
+| `/[slug]` | Public event page + join queue |
+| `/[slug]/manage/[token]` | Host control (private link) |
+| `/[slug]/display` | TV / projector display screen |
+| `/api/cleanup` | Deletes expired events (secured) |
+
+## Getting started
+
+### 1. Install
+
+```bash
+npm install
+```
+
+### 2. Create a Supabase project
+
+Create a free project at [supabase.com](https://supabase.com). Then, in the SQL
+Editor, run the migrations in [`supabase/migrations`](supabase/migrations) in order:
+
+1. `0001_init.sql` — tables, RLS, Realtime and the cleanup function.
+2. `0002_cleanup_cron.sql` — *(optional)* schedules hourly cleanup with `pg_cron`.
+
+> The schema keeps the host token hash in a separate `event_secrets` table with no
+> anonymous access, so it can never leak through the public API or Realtime. All
+> writes go through server actions using the service role key; the public anon key
+> only has read access (enforced by RLS) for live updates.
+
+### 3. Configure environment
+
+Copy `.env.example` to `.env.local` and fill in the values from
+**Project Settings → API**:
+
+```bash
+cp .env.example .env.local
+```
+
+| Variable | Notes |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public anon key (safe in the browser) |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Server only.** Never expose to the browser |
+| `NEXT_PUBLIC_SITE_URL` | Base URL for links + QR codes (e.g. `http://localhost:3000`) |
+| `CLEANUP_SECRET` | Any long random string; required to call `/api/cleanup` |
+
+### 4. Run
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the dev server |
+| `npm run build` | Production build |
+| `npm run check` | Biome lint/format check + TypeScript |
+| `npm run lint:fix` | Apply Biome fixes |
+| `npm run typecheck` | TypeScript only |
 
-## Learn More
+A Husky pre-commit hook runs `lint-staged` (Biome) on staged files.
 
-To learn more about Next.js, take a look at the following resources:
+## Automatic cleanup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Every event stores an `expires_at` timestamp (a few hours after its finish time).
+Choose one of:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **pg_cron** — run `0002_cleanup_cron.sql` and Supabase deletes expired events hourly.
+- **Platform cron** — call the cleanup endpoint on a schedule:
 
-## Deploy on Vercel
+  ```bash
+  curl -X POST https://your-host/api/cleanup -H "Authorization: Bearer $CLEANUP_SECRET"
+  ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+  On Vercel, [`vercel.json`](vercel.json) already defines an hourly cron for
+  `/api/cleanup`; set `CLEANUP_SECRET` (and Vercel's `CRON_SECRET` to the same value)
+  in your project.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploying
+
+Deploy to any platform that supports Next.js (Vercel recommended). Set the same
+environment variables as above, and point `NEXT_PUBLIC_SITE_URL` at your public URL.
+
+## Regenerating icons
+
+```bash
+node scripts/generate-icons.mjs
+```
+
+Renders the PWA icons from the brand mark in [`app/icon.svg`](app/icon.svg).
+
+## License
+
+MIT

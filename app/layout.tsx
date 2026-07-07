@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
+import { Pwa } from "@/components/pwa";
 import { Toaster } from "@/components/ui/sonner";
 import { APP_DESCRIPTION, APP_NAME } from "@/lib/config";
 import { Providers } from "./providers";
@@ -24,6 +25,9 @@ export const metadata: Metadata = {
   description: APP_DESCRIPTION,
   applicationName: APP_NAME,
   manifest: "/manifest.webmanifest",
+  icons: {
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -54,6 +58,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <Providers>{children}</Providers>
         <Toaster richColors closeButton position="bottom-center" />
+        <Pwa />
       </body>
     </html>
   );
