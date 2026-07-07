@@ -51,8 +51,11 @@ export function CreateEventForm() {
     setValue,
     setError,
     getValues,
+    watch,
     formState: { errors, isSubmitting },
   } = form;
+
+  const canUseName = (watch("name") ?? "").trim().length >= 3;
 
   function handleUseName() {
     const slug = slugify(getValues("name") ?? "");
@@ -124,7 +127,9 @@ export function CreateEventForm() {
           <button
             type="button"
             onClick={handleUseName}
-            className="mr-1 shrink-0 whitespace-nowrap rounded px-2 py-1 text-xs font-medium text-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            disabled={!canUseName}
+            title={canUseName ? undefined : "Enter an event name first"}
+            className="mr-1 shrink-0 whitespace-nowrap rounded px-2 py-1 text-xs font-medium text-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-40"
           >
             Use name
           </button>
