@@ -10,6 +10,7 @@ export function CopyButton({
   value,
   message,
   label = "Copy",
+  ariaLabel,
   variant = "outline",
   size = "default",
   className,
@@ -17,6 +18,7 @@ export function CopyButton({
   value: string;
   message?: string;
   label?: string;
+  ariaLabel?: string;
   variant?: React.ComponentProps<typeof Button>["variant"];
   size?: React.ComponentProps<typeof Button>["size"];
   className?: string;
@@ -35,6 +37,7 @@ export function CopyButton({
       variant={variant}
       size={size}
       onClick={handleCopy}
+      aria-label={ariaLabel ?? (label ? undefined : "Copy")}
       className={cn(className)}
     >
       {copied ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />}

@@ -56,6 +56,7 @@ export function ShareDialog({
                 value={publicUrl}
                 message="Public link copied"
                 label=""
+                ariaLabel="Copy public link"
                 variant="outline"
                 size="icon"
               />
@@ -95,6 +96,7 @@ export function ShareDialog({
                 value={displayUrl}
                 message="Display link copied"
                 label=""
+                ariaLabel="Copy display link"
                 variant="outline"
                 size="icon"
               />
@@ -118,6 +120,7 @@ export function ShareDialog({
                 value={manageUrl}
                 message="Host link copied"
                 label=""
+                ariaLabel="Copy host link"
                 variant="outline"
                 size="icon"
               />
