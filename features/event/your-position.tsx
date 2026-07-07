@@ -196,9 +196,9 @@ function Panel({
     <div
       className={cn(
         "flex flex-col items-start gap-2 rounded-2xl border p-5",
-        tone === "up" && "border-primary/50 bg-primary/10",
-        tone === "next" && "border-primary/30 bg-primary/5",
-        (tone === "default" || tone === "waiting") && "border-border bg-card",
+        tone === "up" && "border-primary/60 bg-primary/15 ring-1 ring-primary/20",
+        tone === "next" && "border-primary/40 bg-primary/10",
+        (tone === "default" || tone === "waiting") && "border-primary/30 bg-primary/5",
         tone === "muted" && "items-center border-border bg-card text-center",
       )}
     >
