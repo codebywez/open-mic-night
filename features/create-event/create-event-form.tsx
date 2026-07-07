@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { SITE_URL } from "@/lib/config";
 import { type CreateEventInput, type CreateEventValues, createEventSchema } from "@/lib/schemas";
 import { slugify } from "@/lib/slug";
-import { cn } from "@/lib/utils";
 import { createEvent } from "@/server/actions/events";
 import { EventCreated } from "./event-created";
 
@@ -29,7 +28,6 @@ export function CreateEventForm() {
   const [created, setCreated] = useState<{ slug: string; token: string; name: string } | null>(
     null,
   );
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const form = useForm<CreateEventInput, unknown, CreateEventValues>({
@@ -172,64 +170,10 @@ export function CreateEventForm() {
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setShowAdvanced((v) => !v)}
-        className="flex items-center gap-1.5 self-start text-sm font-medium text-muted-foreground hover:text-foreground"
-        aria-expanded={showAdvanced}
-      >
-        <ChevronDown
-          className={cn("size-4 transition-transform", showAdvanced && "rotate-180")}
-          aria-hidden
-        />
-        Timing settings
-      </button>
-
-      {showAdvanced && (
-        <div className="grid gap-4 rounded-xl border border-border bg-muted/30 p-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="songs">Default songs</Label>
-              <Input
-                id="songs"
-                type="number"
-                min={1}
-                max={10}
-                {...register("songs", { valueAsNumber: true })}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="songDuration">Song length (min)</Label>
-              <Input
-                id="songDuration"
-                type="number"
-                min={0}
-                max={30}
-                {...register("songDurationMinutes", { valueAsNumber: true })}
-              />
-            </div>
-          </div>
-          <fieldset className="space-y-2">
-            <legend className="text-sm font-medium">Setup time per act (min)</legend>
-            <div className="grid grid-cols-3 gap-3">
-              {(["solo", "duo", "band"] as const).map((type) => (
-                <div key={type} className="space-y-1.5">
-                  <Label htmlFor={`setup-${type}`} className="capitalize">
-                    {type}
-                  </Label>
-                  <Input
-                    id={`setup-${type}`}
-                    type="number"
-                    min={0}
-                    max={60}
-                    {...register(`setupMinutes.${type}`, { valueAsNumber: true })}
-                  />
-                </div>
-              ))}
-            </div>
-          </fieldset>
-        </div>
-      )}
+      <p className="text-xs text-muted-foreground">
+        Songs, set lengths and setup times use sensible defaults — you can fine-tune them any time
+        from the host settings.
+      </p>
 
       <Button type="submit" size="lg" className="h-12 text-base" disabled={isSubmitting}>
         {isSubmitting ? (
