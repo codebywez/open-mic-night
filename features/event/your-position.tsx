@@ -54,6 +54,13 @@ export function YourPosition({
   else if (groups.onDeck?.performer.id === performerId) stage = "next";
   else stage = "waiting";
 
+  // When someone is performing (with a recorded start time), the end of their
+  // set is exactly when this next performer goes on.
+  const currentSetEndsAt =
+    groups.nowPlaying?.performer.status === "performing" && event.settings.performingStartedAt
+      ? groups.nowPlaying.endAt
+      : null;
+
   // Play a cue when the performer newly becomes next or is called up.
   useEffect(() => {
     const prev = prevStage.current;
@@ -135,7 +142,10 @@ export function YourPosition({
       {stage === "up" ? (
         <p className="text-4xl font-bold tracking-tight text-primary">You're up!</p>
       ) : stage === "next" ? (
-        <p className="text-4xl font-bold tracking-tight">You're next</p>
+        <div>
+          <p className="text-4xl font-bold tracking-tight">You're next</p>
+          {currentSetEndsAt && <UpNextTimer endAt={currentSetEndsAt} />}
+        </div>
       ) : (
         <div className="flex items-baseline gap-2">
           <span className="text-sm text-muted-foreground">Position</span>
@@ -176,6 +186,33 @@ export function YourPosition({
         )}
       </div>
     </Panel>
+  );
+}
+
+/** Live per-second countdown until the next performer goes on. */
+function UpNextTimer({ endAt }: { endAt: Date }) {
+  const [nowMs, setNowMs] = useState(() => Date.now());
+
+  useEffect(() => {
+    const id = setInterval(() => setNowMs(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const diffMs = endAt.getTime() - nowMs;
+  if (diffMs <= 0) {
+    return <p className="mt-1 text-muted-foreground">You're up any moment now</p>;
+  }
+  const totalSeconds = Math.round(diffMs / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+
+  return (
+    <p className="mt-1 text-muted-foreground">
+      You're up in{" "}
+      <span className="font-semibold tabular-nums text-foreground">
+        {minutes}:{seconds}
+      </span>
+    </p>
   );
 }
 

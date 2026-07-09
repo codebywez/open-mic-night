@@ -169,8 +169,12 @@ export async function updateEventSettings(
       event_date: values.date ?? null,
       start_time: values.startTime ?? null,
       end_time: values.endTime ?? null,
-      // Preserve the sign-ups flag, which is managed separately from this form.
-      settings: { ...toSettings(values), signupsClosed: auth.event.settings.signupsClosed },
+      // Preserve flags managed outside this form (sign-ups, set start time).
+      settings: {
+        ...toSettings(values),
+        signupsClosed: auth.event.settings.signupsClosed,
+        performingStartedAt: auth.event.settings.performingStartedAt,
+      },
     })
     .eq("id", auth.eventId);
 

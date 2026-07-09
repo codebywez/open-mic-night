@@ -159,9 +159,12 @@ export async function setPerformerStatus(
       .eq("id", performerId)
       .eq("event_id", auth.eventId);
     if (error) return { ok: false, error: "Could not start performer." };
-    if (auth.event.status === "open") {
-      await supabase.from("events").update({ status: "live" }).eq("id", auth.eventId);
-    }
+    // Record the set start time (for the countdown) and go live if needed.
+    const eventUpdate: Partial<EventRow> = {
+      settings: { ...auth.event.settings, performingStartedAt: new Date().toISOString() },
+    };
+    if (auth.event.status === "open") eventUpdate.status = "live";
+    await supabase.from("events").update(eventUpdate).eq("id", auth.eventId);
   } else {
     const status = action === "complete" ? "completed" : "queued";
     const { error } = await supabase

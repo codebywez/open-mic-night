@@ -72,14 +72,21 @@ export function buildSchedule(
   const running = event.status === "live" || someonePerforming;
   let cursor = running || !scheduledStart ? now : scheduledStart > now ? scheduledStart : now;
 
+  // Anchor the current performer on their real start time (if recorded) so the
+  // now-playing set has a fixed end time to count down to.
+  const startedRaw = settings.performingStartedAt ? new Date(settings.performingStartedAt) : null;
+  const performingStartedAt = startedRaw && !Number.isNaN(startedRaw.getTime()) ? startedRaw : null;
+
   const items: ScheduledPerformer[] = ordered.map((performer) => {
     const slotMinutes = performerSlotMinutes(performer, settings);
     if (performer.status === "completed") {
       return { performer, slotMinutes, startAt: null, endAt: null };
     }
-    const startAt = cursor;
-    const endAt = addMinutes(cursor, slotMinutes);
-    cursor = endAt;
+    const startAt =
+      performer.status === "performing" && performingStartedAt ? performingStartedAt : cursor;
+    const endAt = addMinutes(startAt, slotMinutes);
+    // Following acts never start in the past.
+    cursor = endAt.getTime() > now.getTime() ? endAt : now;
     return { performer, slotMinutes, startAt, endAt };
   });
 

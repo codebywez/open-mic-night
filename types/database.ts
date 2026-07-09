@@ -14,6 +14,8 @@ export type EventSettings = {
   setupMinutes: Record<PerformanceType, number>;
   /** When true, performers can no longer join even if the event is open/live. */
   signupsClosed?: boolean;
+  /** ISO timestamp of when the current performer started their set (for the countdown). */
+  performingStartedAt?: string | null;
 };
 
 export type EventRow = {
